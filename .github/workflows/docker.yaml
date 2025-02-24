@@ -3,7 +3,7 @@ name: Deploy React App with Docker Swarm
 on:
   push:
     branches:
-      - main  # Deploys when code is pushed to the main branch
+      - master  # Deploys when code is pushed to the main branch
 
 jobs:
   deploy:
