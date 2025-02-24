@@ -33,6 +33,6 @@ jobs:
           docker service rm react-hello-world || true
           docker service create \
             --name react-hello-world \
-            --publish 3001:3000 \
+            --publish 3001:80 \
             --replicas 2 \
             ${{ secrets.DOCKER_HUB_USERNAME }}/react-hello-world:latest
