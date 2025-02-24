@@ -3,7 +3,7 @@ name: Deploy React App with Docker Swarm
 on:
   push:
     branches:
-      - master # Trigger deployment on push to main branch
+      - master  # Deploys when code is pushed to main branch
 
 jobs:
   deploy:
@@ -54,3 +54,4 @@ jobs:
               --replicas 1 \
               -e "NODE_ENV=production" \
               ${{ secrets.DOCKERHUB_USERNAME }}/react-frontend:${{ github.run_id }}
+
