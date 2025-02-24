@@ -54,4 +54,3 @@ jobs:
               --replicas 1 \
               -e "NODE_ENV=production" \
               ${{ secrets.DOCKERHUB_USERNAME }}/react-frontend:${{ github.run_id }}
-
