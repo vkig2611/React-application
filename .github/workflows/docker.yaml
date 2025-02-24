@@ -3,14 +3,14 @@ name: Deploy React App with Docker Swarm
 on:
   push:
     branches:
-      - master  # Deploys when code is pushed to the main branch
+      - main  # Deploys when code is pushed to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
@@ -24,18 +24,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Log in to Docker Hub
+      - name: Log into Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/react-frontend:${{ github.run_id }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/react-frontend:${{ github.run_id }}
 
       - name: Deploy to Docker Swarm
         uses: appleboy/ssh-action@master
@@ -45,7 +45,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             docker network create --driver overlay react-network || true
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/react-frontend:${{ github.run_id }}
+            docker pull ${{ secrets.DOCKER_USERNAME }}/react-frontend:${{ github.run_id }}
             docker service rm react-frontend || true
             docker service create \
               --name react-frontend \
@@ -53,4 +53,4 @@ jobs:
               --network react-network \
               --replicas 1 \
               -e "NODE_ENV=production" \
-              ${{ secrets.DOCKERHUB_USERNAME }}/react-frontend:${{ github.run_id }}
+              ${{ secrets.DOCKER_USERNAME }}/react-frontend:${{ github.run_id }}
