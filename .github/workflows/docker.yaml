@@ -28,10 +28,11 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/react-hello-world:latest
+          docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/react-hello-world:latest
           docker service rm react-hello-world || true
           docker service create \
             --name react-hello-world \
             --publish 3001:80 \
             --replicas 1 \
-            ${{ secrets.DOCKERHUB_USERNAME }}/react-hello-world:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/react-hello-world:latest
