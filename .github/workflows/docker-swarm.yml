@@ -1,0 +1,37 @@
+name: Deploy React App with Docker Swarm
+
+on:
+  push:
+    branches:
+      - master  # Deploy on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/react-hello-world:latest .
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/react-hello-world:latest
+
+    - name: Deploy to Docker Swarm
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/react-hello-world:latest
+          docker service rm react-hello-world || true
+          docker service create \
+            --name react-hello-world \
+            --publish 3001:80 \
+            --replicas 1 \
+            ${{ secrets.DOCKERHUB_USERNAME }}/react-hello-world:latest
