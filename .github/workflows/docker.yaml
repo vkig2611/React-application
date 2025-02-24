@@ -3,7 +3,7 @@ name: Deploy React App with Docker Swarm
 on:
   push:
     branches:
-      - main  # Deploy on push to main branch
+      - master  # Deploy on push to main branch
 
 jobs:
   deploy:
@@ -32,6 +32,6 @@ jobs:
           docker service rm react-hello-world || true
           docker service create \
             --name react-hello-world \
-            --publish 3000:80 \
+            --publish 3001:80 \
             --replicas 1 \
             ${{ secrets.DOCKERHUB_USERNAME }}/react-hello-world:latest
